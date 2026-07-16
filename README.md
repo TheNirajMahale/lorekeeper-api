@@ -69,7 +69,7 @@ For a deep dive into the exact database schema, API contracts, and the Open Libr
 This repository enforces strict coding standards and Git workflows, managed collaboratively with AI agents. If you are an AI assistant contributing to this repo, you **must** read and adhere to the rules defined in the [`.agents/`](./.agents) directory before writing a single line of code.
 
 - **Architecture:** 4-layer pattern only.
-- **Git:** Conventional commits (`type(scope): subject`). No direct commits to `master`.
+- **Git:** Conventional commits (`type(scope): subject`). No direct commits to `main`.
 - **Testing:** Mandatory `curl` and manual testing before any code is committed.
 
 ---
