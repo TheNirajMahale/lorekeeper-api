@@ -22,4 +22,8 @@ describe the actual change.
 - Code compiles and runs
 - At least a basic test exists for new logic
 - No leftover debug prints, commented-out old code, or unexplained TODOs
+- The agent MUST provide all new endpoints (names, HTTP methods, payloads) to the user.
+- The agent MUST test all new endpoints locally using `curl` commands and verify they work.
+- The user MUST manually test and verify the endpoints in their API client (like Bruno).
+- **ONLY AFTER** both the AI and the user have successfully tested the endpoints is the agent allowed to `git commit` the code.
 - Commit message accurately describes what changed and why
