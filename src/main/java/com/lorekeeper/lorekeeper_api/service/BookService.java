@@ -33,6 +33,15 @@ public class BookService {
     }
 
     public BookResponseDTO createBook(BookRequestDTO requestDTO) {
+        // Deduplication: if this edition already exists in our catalog, return the existing one
+        // instead of creating a duplicate row. See LoreKeeper.md Section 6, Point 1.
+        if (requestDTO.getOpenLibraryEditionId() != null) {
+            var existing = bookRepository.findByOpenLibraryEditionId(requestDTO.getOpenLibraryEditionId());
+            if (existing.isPresent()) {
+                return mapToDTO(existing.get());
+            }
+        }
+
         Book book = new Book();
         updateEntityFromDTO(book, requestDTO);
         Book savedBook = bookRepository.save(book);
@@ -67,7 +76,11 @@ public class BookService {
         book.setOpenLibraryEditionId(dto.getOpenLibraryEditionId());
     }
 
-    private BookResponseDTO mapToDTO(Book book) {
+    /**
+     * Shared mapping method — used by both BookService and UserBookService
+     * to avoid duplicating Book-to-DTO conversion logic.
+     */
+    public BookResponseDTO mapToDTO(Book book) {
         BookResponseDTO dto = new BookResponseDTO();
         dto.setId(book.getId());
         dto.setTitle(book.getTitle());

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user-books")
+@RequestMapping("/users/me/library")
 public class UserBookController {
 
     private final UserBookService userBookService;
@@ -22,8 +22,14 @@ public class UserBookController {
 
     @GetMapping
     public List<UserBookResponseDTO> getUserBooks(@RequestParam Long userId) {
-        // Temporarily requires userId as a query parameter until Phase 4 (Authentication) provides it securely via JWT.
+        // Temporarily requires userId as a query parameter until Phase 4 (Authentication)
+        // extracts the user identity from the JWT token automatically.
         return userBookService.getUserBooks(userId);
+    }
+
+    @GetMapping("/{libraryEntryId}")
+    public UserBookResponseDTO getLibraryEntry(@PathVariable Long libraryEntryId) {
+        return userBookService.getLibraryEntry(libraryEntryId);
     }
 
     @PostMapping
@@ -32,14 +38,14 @@ public class UserBookController {
         return userBookService.trackBook(dto);
     }
 
-    @PatchMapping("/{id}")
-    public UserBookResponseDTO updateTrackedBook(@PathVariable Long id, @Valid @RequestBody UserBookUpdateDTO dto) {
-        return userBookService.updateTrackedBook(id, dto);
+    @PatchMapping("/{libraryEntryId}")
+    public UserBookResponseDTO updateTrackedBook(@PathVariable Long libraryEntryId, @Valid @RequestBody UserBookUpdateDTO dto) {
+        return userBookService.updateTrackedBook(libraryEntryId, dto);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{libraryEntryId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void stopTrackingBook(@PathVariable Long id) {
-        userBookService.stopTrackingBook(id);
+    public void stopTrackingBook(@PathVariable Long libraryEntryId) {
+        userBookService.stopTrackingBook(libraryEntryId);
     }
 }

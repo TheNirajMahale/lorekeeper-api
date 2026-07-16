@@ -27,3 +27,12 @@ describe the actual change.
 - The user MUST manually test and verify the endpoints in their API client (like Bruno).
 - **ONLY AFTER** both the AI and the user have successfully tested the endpoints is the agent allowed to `git commit` the code.
 - Commit message accurately describes what changed and why
+
+## Keeping documentation in sync
+- When endpoints are added, removed, or renamed, update Section 5 of
+  `LoreKeeper.md` in the same commit — stale API docs are worse than no docs.
+
+## Branch lifecycle
+- Delete feature branches (local and remote) after merging into `main`.
+- Do not leave stale branches sitting around — they cause confusion about
+  what is current.

@@ -21,12 +21,13 @@ import java.util.stream.Collectors;
 public class OpenLibraryService {
 
     private final RestTemplate restTemplate;
-    
-    @Value("${lorekeeper.openlibrary.contact-email:noreply@example.com}")
-    private String contactEmail;
+    private final String contactEmail;
 
-    public OpenLibraryService() {
-        this.restTemplate = new RestTemplate();
+    public OpenLibraryService(
+            RestTemplate restTemplate,
+            @Value("${lorekeeper.openlibrary.contact-email:noreply@example.com}") String contactEmail) {
+        this.restTemplate = restTemplate;
+        this.contactEmail = contactEmail;
     }
 
     private HttpEntity<String> createEntityWithUserAgent() {

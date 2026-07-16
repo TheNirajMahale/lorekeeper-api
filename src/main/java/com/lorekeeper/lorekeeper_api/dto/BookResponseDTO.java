@@ -1,5 +1,7 @@
 package com.lorekeeper.lorekeeper_api.dto;
 
+import com.lorekeeper.lorekeeper_api.entity.BookFormat;
+
 public class BookResponseDTO {
 
     private Long id;
@@ -7,7 +9,7 @@ public class BookResponseDTO {
     private String author;
     private String summary;
     private String coverImageUrl;
-    private String format;
+    private BookFormat format;
     private Integer totalPages;
     private Integer totalChapters;
     private String openLibraryWorkId;
@@ -28,8 +30,8 @@ public class BookResponseDTO {
     public String getCoverImageUrl() { return coverImageUrl; }
     public void setCoverImageUrl(String coverImageUrl) { this.coverImageUrl = coverImageUrl; }
 
-    public String getFormat() { return format; }
-    public void setFormat(String format) { this.format = format; }
+    public BookFormat getFormat() { return format; }
+    public void setFormat(BookFormat format) { this.format = format; }
 
     public Integer getTotalPages() { return totalPages; }
     public void setTotalPages(Integer totalPages) { this.totalPages = totalPages; }

@@ -169,21 +169,44 @@ erDiagram
 
 ---
 
-## 5. API contract (draft — confirm before building)
+## 5. API contract
 
+### Auth (requires no token)
 | Method | Path | Purpose |
 |---|---|---|
 | `POST` | `/auth/register` | traditional signup |
 | `POST` | `/auth/login` | traditional login, returns JWT |
 | `GET` | `/auth/google` | starts Google OAuth flow |
-| `GET` | `/books/search?title=...` | Step 1 — search Open Library, return matching works |
-| `GET` | `/books/search/{workId}/editions` | Step 2 — list editions of a chosen work |
-| `GET` | `/books/search/editions/{editionId}` | Step 3 — full detail for a chosen edition (page count, cover) |
-| `POST` | `/books` | create a `Book` catalog entry (manual, or from a chosen edition) |
-| `GET` | `/user-books` | list the logged-in user's tracked books |
-| `POST` | `/user-books` | start tracking a book (`bookId`, initial `status`) |
-| `PATCH` | `/user-books/{id}` | update progress/status/rating/favorite |
-| `DELETE` | `/user-books/{id}` | stop tracking a book |
+
+### Local book catalog
+| Method | Path | Auth | Purpose |
+|---|---|---|---|
+| `GET` | `/books` | Public | list all books in the local catalog |
+| `GET` | `/books/{id}` | Public | get a specific book's details |
+| `POST` | `/books` | Required | create a book catalog entry (manual or from Open Library data) — deduplicates by `open_library_edition_id` |
+| `PUT` | `/books/{id}` | Required | update an existing book |
+| `DELETE` | `/books/{id}` | Required | delete a book |
+
+### Open Library proxy (external search — all public)
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` | `/open-library/works?title=...` | Step 1 — search Open Library, return matching works |
+| `GET` | `/open-library/works/{workId}/editions` | Step 2 — list editions of a chosen work |
+| `GET` | `/open-library/editions/{editionId}` | Step 3 — full detail for a chosen edition (page count, cover) |
+
+### User library (tracking — all require auth)
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` | `/users/me/library?status=...&q=...` | list the logged-in user's tracked books, with optional filters |
+| `GET` | `/users/me/library/{libraryEntryId}` | get a single tracked book's full details |
+| `POST` | `/users/me/library` | start tracking a book (`bookId`, initial `status`) |
+| `PATCH` | `/users/me/library/{libraryEntryId}` | update progress/status/rating/favorite |
+| `DELETE` | `/users/me/library/{libraryEntryId}` | stop tracking a book |
+
+### User profile (requires auth)
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` | `/users/me` | get the logged-in user's profile (email, auth provider, created date) |
 
 ---
 

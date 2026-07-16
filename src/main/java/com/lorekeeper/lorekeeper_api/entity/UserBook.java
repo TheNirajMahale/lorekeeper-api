@@ -8,7 +8,8 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user_books")
+@Table(name = "user_books",
+       uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "book_id"}))
 public class UserBook {
 
     @Id

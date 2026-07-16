@@ -1,6 +1,5 @@
 package com.lorekeeper.lorekeeper_api.service;
 
-import com.lorekeeper.lorekeeper_api.dto.BookResponseDTO;
 import com.lorekeeper.lorekeeper_api.dto.UserBookRequestDTO;
 import com.lorekeeper.lorekeeper_api.dto.UserBookResponseDTO;
 import com.lorekeeper.lorekeeper_api.dto.UserBookUpdateDTO;
@@ -25,11 +24,14 @@ public class UserBookService {
     private final UserBookRepository userBookRepository;
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
+    private final BookService bookService;
 
-    public UserBookService(UserBookRepository userBookRepository, UserRepository userRepository, BookRepository bookRepository) {
+    public UserBookService(UserBookRepository userBookRepository, UserRepository userRepository,
+                           BookRepository bookRepository, BookService bookService) {
         this.userBookRepository = userBookRepository;
         this.userRepository = userRepository;
         this.bookRepository = bookRepository;
+        this.bookService = bookService;
     }
 
     public List<UserBookResponseDTO> getUserBooks(Long userId) {
@@ -37,6 +39,12 @@ public class UserBookService {
                 .stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
+    }
+
+    public UserBookResponseDTO getLibraryEntry(Long libraryEntryId) {
+        UserBook userBook = userBookRepository.findById(libraryEntryId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Library entry not found"));
+        return mapToDTO(userBook);
     }
 
     public UserBookResponseDTO trackBook(UserBookRequestDTO dto) {
@@ -73,9 +81,9 @@ public class UserBookService {
         return mapToDTO(saved);
     }
 
-    public UserBookResponseDTO updateTrackedBook(Long id, UserBookUpdateDTO dto) {
-        UserBook userBook = userBookRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tracked book not found"));
+    public UserBookResponseDTO updateTrackedBook(Long libraryEntryId, UserBookUpdateDTO dto) {
+        UserBook userBook = userBookRepository.findById(libraryEntryId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Library entry not found"));
 
         if (dto.getStatus() != null) {
             userBook.setStatus(dto.getStatus());
@@ -92,11 +100,11 @@ public class UserBookService {
         return mapToDTO(updated);
     }
 
-    public void stopTrackingBook(Long id) {
-        if (!userBookRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tracked book not found");
+    public void stopTrackingBook(Long libraryEntryId) {
+        if (!userBookRepository.existsById(libraryEntryId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Library entry not found");
         }
-        userBookRepository.deleteById(id);
+        userBookRepository.deleteById(libraryEntryId);
     }
 
     private UserBookResponseDTO mapToDTO(UserBook userBook) {
@@ -111,19 +119,8 @@ public class UserBookService {
         dto.setStartedAt(userBook.getStartedAt());
         dto.setCompletedAt(userBook.getCompletedAt());
 
-        BookResponseDTO bookDTO = new BookResponseDTO();
-        Book book = userBook.getBook();
-        bookDTO.setId(book.getId());
-        bookDTO.setTitle(book.getTitle());
-        bookDTO.setAuthor(book.getAuthor());
-        bookDTO.setFormat(book.getFormat());
-        bookDTO.setCoverImageUrl(book.getCoverImageUrl());
-        bookDTO.setTotalPages(book.getTotalPages());
-        bookDTO.setTotalChapters(book.getTotalChapters());
-        bookDTO.setOpenLibraryWorkId(book.getOpenLibraryWorkId());
-        bookDTO.setOpenLibraryEditionId(book.getOpenLibraryEditionId());
-        
-        dto.setBook(bookDTO);
+        // Reuse BookService's shared mapper instead of duplicating 9 setter calls
+        dto.setBook(bookService.mapToDTO(userBook.getBook()));
         return dto;
     }
 }

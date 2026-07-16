@@ -40,3 +40,19 @@ com.lorekeeper.lorekeeper_api
 - Prefer Spring Data derived query methods (`findByX`, `existsByX`) over
   writing custom `@Query` unless the derived method name would be unreasonably
   long or the query is genuinely too complex to express that way
+
+## Enums
+- Any field with a fixed set of allowed values (e.g. format, status, provider)
+  must be a Java enum with `@Enumerated(EnumType.STRING)` — never a raw `String`
+  with a comment listing the allowed values
+
+## API design
+- URLs represent resources (nouns), never actions (verbs)
+- Use `/users/me/...` for authenticated-user-scoped resources
+- Use query parameters for filtering, searching, and pagination — not separate endpoints
+- Path variable names must be unambiguous (e.g. `{libraryEntryId}`, not bare `{id}`
+  when the resource could be confused with another)
+- Local DB endpoints and external API proxy endpoints must live under different
+  URL prefixes (e.g. `/books` for local catalog, `/open-library` for external lookups)
+- One controller per resource concern — do not mix local DB operations and
+  external API proxying in the same controller

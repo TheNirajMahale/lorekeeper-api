@@ -1,6 +1,8 @@
 package com.lorekeeper.lorekeeper_api.dto;
 
+import com.lorekeeper.lorekeeper_api.entity.BookFormat;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class BookRequestDTO {
 
@@ -13,8 +15,8 @@ public class BookRequestDTO {
     private String summary;
     private String coverImageUrl;
 
-    @NotBlank
-    private String format;
+    @NotNull
+    private BookFormat format;
 
     private Integer totalPages;
     private Integer totalChapters;
@@ -33,8 +35,8 @@ public class BookRequestDTO {
     public String getCoverImageUrl() { return coverImageUrl; }
     public void setCoverImageUrl(String coverImageUrl) { this.coverImageUrl = coverImageUrl; }
 
-    public String getFormat() { return format; }
-    public void setFormat(String format) { this.format = format; }
+    public BookFormat getFormat() { return format; }
+    public void setFormat(BookFormat format) { this.format = format; }
 
     public Integer getTotalPages() { return totalPages; }
     public void setTotalPages(Integer totalPages) { this.totalPages = totalPages; }

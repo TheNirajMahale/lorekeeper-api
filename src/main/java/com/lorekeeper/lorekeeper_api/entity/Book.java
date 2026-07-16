@@ -1,10 +1,6 @@
 package com.lorekeeper.lorekeeper_api.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -26,8 +22,10 @@ public class Book {
 
     private String coverImageUrl;
 
-    @NotBlank
-    private String format; // "BOOK", "COMIC", "MANGA"
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BookFormat format;
 
     private Integer totalPages;
 
@@ -37,7 +35,9 @@ public class Book {
 
     private String openLibraryEditionId;
 
-    // TODO: Add addedByUserId once User entity is implemented
+    @ManyToOne
+    @JoinColumn(name = "added_by_user_id")
+    private User addedByUser;
 
     public Book() {}
 
@@ -56,8 +56,8 @@ public class Book {
     public String getCoverImageUrl() { return coverImageUrl; }
     public void setCoverImageUrl(String coverImageUrl) { this.coverImageUrl = coverImageUrl; }
 
-    public String getFormat() { return format; }
-    public void setFormat(String format) { this.format = format; }
+    public BookFormat getFormat() { return format; }
+    public void setFormat(BookFormat format) { this.format = format; }
 
     public Integer getTotalPages() { return totalPages; }
     public void setTotalPages(Integer totalPages) { this.totalPages = totalPages; }
@@ -70,4 +70,7 @@ public class Book {
 
     public String getOpenLibraryEditionId() { return openLibraryEditionId; }
     public void setOpenLibraryEditionId(String openLibraryEditionId) { this.openLibraryEditionId = openLibraryEditionId; }
+
+    public User getAddedByUser() { return addedByUser; }
+    public void setAddedByUser(User addedByUser) { this.addedByUser = addedByUser; }
 }
