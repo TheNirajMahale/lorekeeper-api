@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -21,9 +22,8 @@ public class UserBookController {
     }
 
     @GetMapping
-    public List<UserBookResponseDTO> getUserBooks(@RequestParam Long userId) {
-        // Temporarily requires userId as a query parameter until Phase 4 (Authentication)
-        // extracts the user identity from the JWT token automatically.
+    public List<UserBookResponseDTO> getUserBooks(Principal principal) {
+        Long userId = Long.valueOf(principal.getName());
         return userBookService.getUserBooks(userId);
     }
 
@@ -34,8 +34,9 @@ public class UserBookController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserBookResponseDTO trackBook(@Valid @RequestBody UserBookRequestDTO dto) {
-        return userBookService.trackBook(dto);
+    public UserBookResponseDTO trackBook(Principal principal, @Valid @RequestBody UserBookRequestDTO dto) {
+        Long userId = Long.valueOf(principal.getName());
+        return userBookService.trackBook(userId, dto);
     }
 
     @PatchMapping("/{libraryEntryId}")

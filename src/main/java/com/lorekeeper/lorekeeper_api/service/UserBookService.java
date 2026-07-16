@@ -47,9 +47,9 @@ public class UserBookService {
         return mapToDTO(userBook);
     }
 
-    public UserBookResponseDTO trackBook(UserBookRequestDTO dto) {
+    public UserBookResponseDTO trackBook(Long userId, UserBookRequestDTO dto) {
         // Validate User
-        User user = userRepository.findById(dto.getUserId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         // Validate Book

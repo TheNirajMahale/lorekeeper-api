@@ -14,6 +14,12 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final com.lorekeeper.lorekeeper_api.security.JwtAuthenticationFilter jwtAuthFilter;
+
+    public SecurityConfig(com.lorekeeper.lorekeeper_api.security.JwtAuthenticationFilter jwtAuthFilter) {
+        this.jwtAuthFilter = jwtAuthFilter;
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -33,12 +39,10 @@ public class SecurityConfig {
                 // Public: searching Open Library (read-only, external proxy)
                 .requestMatchers(HttpMethod.GET, "/open-library/**").permitAll()
                 
-                // TODO: lock down /users/me/library once Phase 4 (JWT auth) is implemented — currently open for testing
-                .requestMatchers("/users/me/library/**").permitAll()
-                
                 // Private: everything else requires a valid JWT token
                 .anyRequest().authenticated()
-            );
+            )
+            .addFilterBefore(jwtAuthFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

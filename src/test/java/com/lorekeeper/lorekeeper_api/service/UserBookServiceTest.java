@@ -57,7 +57,6 @@ public class UserBookServiceTest {
         mockBook.setFormat(BookFormat.BOOK);
 
         requestDTO = new UserBookRequestDTO();
-        requestDTO.setUserId(1L);
         requestDTO.setBookId(100L);
         requestDTO.setStatus(ReadStatus.READING);
     }
@@ -72,7 +71,7 @@ public class UserBookServiceTest {
         savedMock.setId(5L);
         when(userBookRepository.save(any(UserBook.class))).thenReturn(savedMock);
 
-        UserBookResponseDTO response = userBookService.trackBook(requestDTO);
+        UserBookResponseDTO response = userBookService.trackBook(1L, requestDTO);
 
         assertNotNull(response);
         assertEquals(ReadStatus.READING, response.getStatus());
@@ -87,7 +86,7 @@ public class UserBookServiceTest {
         when(userBookRepository.findByUserIdAndBookId(1L, 100L)).thenReturn(Optional.of(new UserBook()));
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            userBookService.trackBook(requestDTO);
+            userBookService.trackBook(1L, requestDTO);
         });
 
         assertEquals(409, exception.getStatusCode().value());
