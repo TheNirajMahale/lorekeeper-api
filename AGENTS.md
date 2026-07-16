@@ -23,27 +23,40 @@ endpoint shapes that contradict what's already specified there.
 2. Never skip straight from "here's what you asked for" to a wall of code.
    A one-paragraph plan costs nothing and catches misunderstandings early.
 
+## Handling partial or ambiguous approval
+If a message contains both a specific correction AND a vague blanket phrase
+like "rest is ok", "rest is fine", or "the other changes are good" — **do not
+treat that as permission to silently execute everything else.** Instead:
+1. Apply/explain only the specific, unambiguous part first.
+2. Explicitly restate, as a numbered list, exactly what "the rest" refers to —
+   every remaining change you believe was approved.
+3. Wait for explicit confirmation of that restated list before writing any
+   code for those remaining items.
+
+Example — if told "clear the point 1 explain, rest changes is ok":
+- First, explain point 1 in plain language. Do not touch code yet.
+- Then say: "Here is what I understand 'the rest' to mean: [1] ..., [2] ..., [3] ... — confirm before I implement these."
+- Only proceed after the human replies to confirm.
+
+Never expand a vague approval into more changes than were explicitly listed
+back and confirmed.
+
 ## Never fabricate framework details
 If you are not fully certain about an exact Spring Boot annotation, method
 signature, property name, or version-specific behavior — say so explicitly
 and name where to verify it (docs.spring.io), instead of confidently guessing.
 A wrong but confident answer is worse than an honest "not sure, verify this."
 
-## Follow the existing project structure exactly
-Every resource in this codebase follows the same four-layer pattern:
-`entity/` → `dto/` → `repository/` → `controller/`, plus `exception/` for shared
-error handling. Do not invent a different structure for a new feature. If you
-think a genuinely different pattern is warranted, explain why and ask first —
-don't just silently do something else.
+## Architecture standard
+Every resource in this project follows the same full pattern:
+`Entity → RequestDTO/ResponseDTO → Repository → Service → Controller`, 
+per `.agents/skills/new-feature-scaffold/SKILL.md`. There is no legacy exception. 
+Do not invent a different structure.
 
-- Entities: private fields, `@NotBlank`/other validation on required fields,
-  standard getters/setters (`isX()` for booleans, not `getX()`).
-- Never return an `@Entity` directly from a controller — always convert to a
-  matching `*ResponseDTO` first.
-- Constructor injection only. Never field injection (`@Autowired` on a field).
-- New "not found" / "invalid input" cases should route through the existing
-  `GlobalExceptionHandler` pattern (`ResponseStatusException`), not a new
-  ad-hoc error-handling style.
+- **Entities:** private fields, `@NotBlank`/other validation on required fields, standard getters/setters.
+- **DTOs:** Never return an `@Entity` directly from a controller, and never accept one as a `@RequestBody` — always use matching DTOs.
+- **Controllers & Services:** Constructor injection only. Never field injection (`@Autowired` on a field). Controllers only delegate to Services; business logic lives in the Service.
+- **Error Handling:** Route "not found" / "invalid input" cases through the existing `GlobalExceptionHandler` pattern (`ResponseStatusException`), not a new ad-hoc style.
 
 ## No scope creep
 Implement exactly what was asked. If you notice something else worth doing
