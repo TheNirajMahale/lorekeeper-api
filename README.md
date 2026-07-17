@@ -19,6 +19,7 @@ Unlike generic trackers, this API is designed with strict architectural standard
 - **Centralized Cataloging**: Track books, comics, and manga in one unified database.
 - **Open Library Integration**: Automatically fetch book metadata, page counts, and cover art using the Open Library API.
 - **User Tracking**: Keep tabs on reading status (`READING`, `COMPLETED`, `ON_HOLD`), current page/chapter, and personal ratings.
+- **Secure Authentication**: Stateless JWT-based security featuring traditional Email/Password login and Google OAuth integration.
 - **Strict Validation**: Bulletproof data integrity using Jakarta Validation and a centralized `GlobalExceptionHandler`.
 - **Workflow Driven**: Developed with rigorous AI agent workflows enforcing clean git histories and architectural consistency.
 
@@ -26,9 +27,10 @@ Unlike generic trackers, this API is designed with strict architectural standard
 
 - **Framework:** Spring Boot (Web, Data JPA, Validation)
 - **Language:** Java 17
+- **Security:** Spring Security & JWT (`io.jsonwebtoken`)
 - **Database:** PostgreSQL
 - **Build Tool:** Maven
-- **External Integrations:** Open Library API (via `RestTemplate`)
+- **External Integrations:** Open Library API (via `RestTemplate`), Google OAuth (Sign-in)
 
 ## Getting Started
 
@@ -64,9 +66,9 @@ Unlike generic trackers, this API is designed with strict architectural standard
 For a deep dive into the exact database schema, API contracts, and the Open Library 3-step lookup flow, please read the core specification document:
 [**LoreKeeper.md**](./LoreKeeper.md)
 
-## Agentic Workflow & Rules
+## Development Standards & AI Review
 
-This repository enforces strict coding standards and Git workflows, managed collaboratively with AI agents. If you are an AI assistant contributing to this repo, you **must** read and adhere to the rules defined in the [`.agents/`](./.agents) directory before writing a single line of code.
+This repository enforces strict coding standards and Git workflows. AI tools are utilized strictly for code-review and enforcing architectural consistency. If you are an AI assistant analyzing this repo, you **must** read and adhere to the rules defined in the [`.agents/`](./.agents) directory.
 
 - **Architecture:** 4-layer pattern only.
 - **Git:** Conventional commits (`type(scope): subject`). No direct commits to `main`.
