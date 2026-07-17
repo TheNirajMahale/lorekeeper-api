@@ -176,7 +176,7 @@ erDiagram
 |---|---|---|
 | `POST` | `/auth/register` | traditional signup |
 | `POST` | `/auth/login` | traditional login, returns JWT |
-| `GET` | `/auth/google` | starts Google OAuth flow |
+| `POST` | `/auth/google` | complete Google OAuth flow, accepts idToken in body, returns JWT |
 
 ### Local book catalog
 | Method | Path | Auth | Purpose |

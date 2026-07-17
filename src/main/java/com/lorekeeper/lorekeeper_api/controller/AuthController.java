@@ -28,4 +28,9 @@ public class AuthController {
     public AuthResponseDTO login(@Valid @RequestBody LoginRequestDTO request) {
         return authService.login(request);
     }
+
+    @PostMapping("/google")
+    public AuthResponseDTO loginWithGoogle(@Valid @RequestBody com.lorekeeper.lorekeeper_api.dto.GoogleLoginRequestDTO request) {
+        return authService.loginWithGoogle(request);
+    }
 }

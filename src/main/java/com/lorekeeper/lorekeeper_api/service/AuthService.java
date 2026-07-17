@@ -8,10 +8,18 @@ import com.lorekeeper.lorekeeper_api.entity.AuthProvider;
 import com.lorekeeper.lorekeeper_api.entity.User;
 import com.lorekeeper.lorekeeper_api.repository.UserRepository;
 import com.lorekeeper.lorekeeper_api.security.JwtService;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+import com.lorekeeper.lorekeeper_api.dto.GoogleLoginRequestDTO;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Collections;
 
 @Service
 public class AuthService {
@@ -19,6 +27,9 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+
+    @Value("${google.client.id}")
+    private String googleClientId;
 
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
@@ -61,12 +72,56 @@ public class AuthService {
         return new AuthResponseDTO(jwtToken, mapToUserResponseDTO(user));
     }
 
+    public AuthResponseDTO loginWithGoogle(GoogleLoginRequestDTO request) {
+        try {
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(),
+                    new GsonFactory())
+                    .setAudience(Collections.singletonList(googleClientId))
+                    .build();
+
+            GoogleIdToken idToken = verifier.verify(request.getIdToken());
+            if (idToken != null) {
+                GoogleIdToken.Payload payload = idToken.getPayload();
+
+                // Get profile information from payload
+                String email = payload.getEmail();
+                String providerId = payload.getSubject();
+
+                User user = userRepository.findByEmail(email).orElse(null);
+
+                if (user == null) {
+                    // Register new user
+                    user = new User();
+                    user.setEmail(email);
+                    user.setAuthProvider(AuthProvider.GOOGLE);
+                    user.setProviderId(providerId);
+                    user = userRepository.save(user);
+                } else {
+                    // User exists. Check if they signed up with Google.
+                    if (user.getAuthProvider() != AuthProvider.GOOGLE) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                "Email already registered with password. Please login normally.");
+                    }
+                }
+
+                String jwtToken = jwtService.generateToken(user.getId(), user.getEmail());
+                return new AuthResponseDTO(jwtToken, mapToUserResponseDTO(user));
+            } else {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Google ID token");
+            }
+        } catch (ResponseStatusException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+                    "Failed to verify Google token: " + e.getMessage());
+        }
+    }
+
     private UserResponseDTO mapToUserResponseDTO(User user) {
         return new UserResponseDTO(
                 user.getId(),
                 user.getEmail(),
                 user.getAuthProvider(),
-                user.getCreatedAt()
-        );
+                user.getCreatedAt());
     }
 }
