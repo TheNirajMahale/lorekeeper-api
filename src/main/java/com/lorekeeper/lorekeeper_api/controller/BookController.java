@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -31,8 +32,9 @@ public class BookController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BookResponseDTO createBook(@Valid @RequestBody BookRequestDTO requestDTO) {
-        return bookService.createBook(requestDTO);
+    public BookResponseDTO createBook(Principal principal, @Valid @RequestBody BookRequestDTO requestDTO) {
+        Long userId = Long.valueOf(principal.getName());
+        return bookService.createBook(userId, requestDTO);
     }
 
     @PutMapping("/{id}")

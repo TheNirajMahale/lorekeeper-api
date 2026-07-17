@@ -3,6 +3,7 @@ package com.lorekeeper.lorekeeper_api.controller;
 import com.lorekeeper.lorekeeper_api.dto.UserBookRequestDTO;
 import com.lorekeeper.lorekeeper_api.dto.UserBookResponseDTO;
 import com.lorekeeper.lorekeeper_api.dto.UserBookUpdateDTO;
+import com.lorekeeper.lorekeeper_api.entity.ReadStatus;
 import com.lorekeeper.lorekeeper_api.service.UserBookService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -22,14 +23,18 @@ public class UserBookController {
     }
 
     @GetMapping
-    public List<UserBookResponseDTO> getUserBooks(Principal principal) {
+    public List<UserBookResponseDTO> getUserBooks(
+            Principal principal,
+            @RequestParam(required = false) ReadStatus status,
+            @RequestParam(required = false) String q) {
         Long userId = Long.valueOf(principal.getName());
-        return userBookService.getUserBooks(userId);
+        return userBookService.getUserBooks(userId, status, q);
     }
 
     @GetMapping("/{libraryEntryId}")
-    public UserBookResponseDTO getLibraryEntry(@PathVariable Long libraryEntryId) {
-        return userBookService.getLibraryEntry(libraryEntryId);
+    public UserBookResponseDTO getLibraryEntry(Principal principal, @PathVariable Long libraryEntryId) {
+        Long userId = Long.valueOf(principal.getName());
+        return userBookService.getLibraryEntry(userId, libraryEntryId);
     }
 
     @PostMapping
@@ -40,13 +45,15 @@ public class UserBookController {
     }
 
     @PatchMapping("/{libraryEntryId}")
-    public UserBookResponseDTO updateTrackedBook(@PathVariable Long libraryEntryId, @Valid @RequestBody UserBookUpdateDTO dto) {
-        return userBookService.updateTrackedBook(libraryEntryId, dto);
+    public UserBookResponseDTO updateTrackedBook(Principal principal, @PathVariable Long libraryEntryId, @Valid @RequestBody UserBookUpdateDTO dto) {
+        Long userId = Long.valueOf(principal.getName());
+        return userBookService.updateTrackedBook(userId, libraryEntryId, dto);
     }
 
     @DeleteMapping("/{libraryEntryId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void stopTrackingBook(@PathVariable Long libraryEntryId) {
-        userBookService.stopTrackingBook(libraryEntryId);
+    public void stopTrackingBook(Principal principal, @PathVariable Long libraryEntryId) {
+        Long userId = Long.valueOf(principal.getName());
+        userBookService.stopTrackingBook(userId, libraryEntryId);
     }
 }

@@ -34,16 +34,31 @@ public class UserBookService {
         this.bookService = bookService;
     }
 
-    public List<UserBookResponseDTO> getUserBooks(Long userId) {
-        return userBookRepository.findByUserId(userId)
-                .stream()
+    public List<UserBookResponseDTO> getUserBooks(Long userId, ReadStatus status, String query) {
+        List<UserBook> entries;
+
+        if (status != null) {
+            entries = userBookRepository.findByUserIdAndStatus(userId, status);
+        } else {
+            entries = userBookRepository.findByUserId(userId);
+        }
+
+        // Apply text search filter (case-insensitive match on book title or author)
+        if (query != null && !query.isBlank()) {
+            String lowerQuery = query.toLowerCase();
+            entries = entries.stream()
+                    .filter(ub -> ub.getBook().getTitle().toLowerCase().contains(lowerQuery)
+                            || ub.getBook().getAuthor().toLowerCase().contains(lowerQuery))
+                    .collect(Collectors.toList());
+        }
+
+        return entries.stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
 
-    public UserBookResponseDTO getLibraryEntry(Long libraryEntryId) {
-        UserBook userBook = userBookRepository.findById(libraryEntryId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Library entry not found"));
+    public UserBookResponseDTO getLibraryEntry(Long userId, Long libraryEntryId) {
+        UserBook userBook = findByIdAndVerifyOwnership(userId, libraryEntryId);
         return mapToDTO(userBook);
     }
 
@@ -65,8 +80,23 @@ public class UserBookService {
         userBook.setUser(user);
         userBook.setBook(book);
         userBook.setStatus(dto.getStatus());
-        userBook.setCurrentPage(dto.getCurrentPage());
-        userBook.setCurrentChapter(dto.getCurrentChapter());
+
+        // Fix 5: validate page/chapter bounds during initial tracking
+        if (dto.getCurrentPage() != null) {
+            if (book.getTotalPages() != null && dto.getCurrentPage() > book.getTotalPages()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "currentPage (" + dto.getCurrentPage() + ") cannot exceed totalPages (" + book.getTotalPages() + ")");
+            }
+            userBook.setCurrentPage(dto.getCurrentPage());
+        }
+        if (dto.getCurrentChapter() != null) {
+            if (book.getTotalChapters() != null && dto.getCurrentChapter() > book.getTotalChapters()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "currentChapter (" + dto.getCurrentChapter() + ") cannot exceed totalChapters (" + book.getTotalChapters() + ")");
+            }
+            userBook.setCurrentChapter(dto.getCurrentChapter());
+        }
+
         userBook.setRating(dto.getRating());
         userBook.setFavorite(dto.isFavorite());
 
@@ -81,18 +111,40 @@ public class UserBookService {
         return mapToDTO(saved);
     }
 
-    public UserBookResponseDTO updateTrackedBook(Long libraryEntryId, UserBookUpdateDTO dto) {
-        UserBook userBook = userBookRepository.findById(libraryEntryId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Library entry not found"));
+    public UserBookResponseDTO updateTrackedBook(Long userId, Long libraryEntryId, UserBookUpdateDTO dto) {
+        UserBook userBook = findByIdAndVerifyOwnership(userId, libraryEntryId);
 
         if (dto.getStatus() != null) {
             userBook.setStatus(dto.getStatus());
+            // Fix 2: set startedAt when status transitions to READING
+            if (dto.getStatus() == ReadStatus.READING && userBook.getStartedAt() == null) {
+                userBook.setStartedAt(LocalDateTime.now());
+            }
             if (dto.getStatus() == ReadStatus.COMPLETED && userBook.getCompletedAt() == null) {
                 userBook.setCompletedAt(LocalDateTime.now());
+                // Also set startedAt if somehow it was never set
+                if (userBook.getStartedAt() == null) {
+                    userBook.setStartedAt(LocalDateTime.now());
+                }
             }
         }
-        if (dto.getCurrentPage() != null) userBook.setCurrentPage(dto.getCurrentPage());
-        if (dto.getCurrentChapter() != null) userBook.setCurrentChapter(dto.getCurrentChapter());
+
+        // Fix 5: validate page/chapter bounds before accepting updates
+        Book book = userBook.getBook();
+        if (dto.getCurrentPage() != null) {
+            if (book.getTotalPages() != null && dto.getCurrentPage() > book.getTotalPages()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "currentPage (" + dto.getCurrentPage() + ") cannot exceed totalPages (" + book.getTotalPages() + ")");
+            }
+            userBook.setCurrentPage(dto.getCurrentPage());
+        }
+        if (dto.getCurrentChapter() != null) {
+            if (book.getTotalChapters() != null && dto.getCurrentChapter() > book.getTotalChapters()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "currentChapter (" + dto.getCurrentChapter() + ") cannot exceed totalChapters (" + book.getTotalChapters() + ")");
+            }
+            userBook.setCurrentChapter(dto.getCurrentChapter());
+        }
         if (dto.getRating() != null) userBook.setRating(dto.getRating());
         if (dto.getIsFavorite() != null) userBook.setFavorite(dto.getIsFavorite());
 
@@ -100,11 +152,23 @@ public class UserBookService {
         return mapToDTO(updated);
     }
 
-    public void stopTrackingBook(Long libraryEntryId) {
-        if (!userBookRepository.existsById(libraryEntryId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Library entry not found");
-        }
+    public void stopTrackingBook(Long userId, Long libraryEntryId) {
+        // Verify ownership before deleting
+        findByIdAndVerifyOwnership(userId, libraryEntryId);
         userBookRepository.deleteById(libraryEntryId);
+    }
+
+    /**
+     * Shared helper: find a library entry by ID and verify it belongs to the given user.
+     * Throws 404 if entry doesn't exist, 403 if it belongs to a different user.
+     */
+    private UserBook findByIdAndVerifyOwnership(Long userId, Long libraryEntryId) {
+        UserBook userBook = userBookRepository.findById(libraryEntryId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Library entry not found"));
+        if (!userBook.getUser().getId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have access to this library entry");
+        }
+        return userBook;
     }
 
     private UserBookResponseDTO mapToDTO(UserBook userBook) {

@@ -3,7 +3,9 @@ package com.lorekeeper.lorekeeper_api.service;
 import com.lorekeeper.lorekeeper_api.dto.BookRequestDTO;
 import com.lorekeeper.lorekeeper_api.dto.BookResponseDTO;
 import com.lorekeeper.lorekeeper_api.entity.Book;
+import com.lorekeeper.lorekeeper_api.entity.User;
 import com.lorekeeper.lorekeeper_api.repository.BookRepository;
+import com.lorekeeper.lorekeeper_api.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,9 +17,11 @@ import java.util.stream.Collectors;
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final UserRepository userRepository;
 
-    public BookService(BookRepository bookRepository) {
+    public BookService(BookRepository bookRepository, UserRepository userRepository) {
         this.bookRepository = bookRepository;
+        this.userRepository = userRepository;
     }
 
     public List<BookResponseDTO> getAllBooks() {
@@ -32,7 +36,7 @@ public class BookService {
         return mapToDTO(book);
     }
 
-    public BookResponseDTO createBook(BookRequestDTO requestDTO) {
+    public BookResponseDTO createBook(Long userId, BookRequestDTO requestDTO) {
         // Deduplication: if this edition already exists in our catalog, return the existing one
         // instead of creating a duplicate row. See LoreKeeper.md Section 6, Point 1.
         if (requestDTO.getOpenLibraryEditionId() != null) {
@@ -42,8 +46,12 @@ public class BookService {
             }
         }
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
         Book book = new Book();
         updateEntityFromDTO(book, requestDTO);
+        book.setAddedByUser(user);
         Book savedBook = bookRepository.save(book);
         return mapToDTO(savedBook);
     }
