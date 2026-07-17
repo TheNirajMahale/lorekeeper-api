@@ -45,7 +45,7 @@ public class UserBookServiceTest {
     @BeforeEach
     void setUp() {
         // BookService is not mocked — we use a real instance so mapToDTO() works
-        bookService = new BookService(bookRepository);
+        bookService = new BookService(bookRepository, userRepository);
         userBookService = new UserBookService(userBookRepository, userRepository, bookRepository, bookService);
 
         mockUser = new User();
