@@ -35,3 +35,6 @@ build/
 # Local Dev/Test tools
 google-test.html
 tmp/
+
+# Logs
+*.log
