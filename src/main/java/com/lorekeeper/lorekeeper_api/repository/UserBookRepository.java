@@ -8,13 +8,20 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+// Repository for accessing UserBook (tracking) entities
 @Repository
 public interface UserBookRepository extends JpaRepository<UserBook, Long> {
 
-    List<UserBook> findByUserId(Long userId);
+    @Query("SELECT ub FROM UserBook ub WHERE ub.user.id = :userId")
+    List<UserBook> findByUserId(@Param("userId") Long userId);
 
-    List<UserBook> findByUserIdAndStatus(Long userId, ReadStatus status);
+    @Query("SELECT ub FROM UserBook ub WHERE ub.user.id = :userId AND ub.status = :status")
+    List<UserBook> findByUserIdAndStatus(@Param("userId") Long userId, @Param("status") ReadStatus status);
 
-    Optional<UserBook> findByUserIdAndBookId(Long userId, Long bookId);
+    @Query("SELECT ub FROM UserBook ub WHERE ub.user.id = :userId AND ub.book.id = :bookId")
+    Optional<UserBook> findByUserIdAndBookId(@Param("userId") Long userId, @Param("bookId") Long bookId);
     
 }

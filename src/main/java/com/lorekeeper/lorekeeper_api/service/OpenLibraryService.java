@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// Service for interacting with the external Open Library API
 @Service
 public class OpenLibraryService {
 

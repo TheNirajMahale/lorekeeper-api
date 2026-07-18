@@ -9,6 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+// Controller proxying search requests to the external Open Library API
 @RestController
 @RequestMapping("/open-library")
 public class OpenLibraryController {

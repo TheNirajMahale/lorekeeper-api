@@ -1,10 +1,20 @@
 package com.lorekeeper.lorekeeper_api.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import com.lorekeeper.lorekeeper_api.entity.ReadStatus;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
+// DTO for UserBookRequestDTO
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserBookRequestDTO {
 
 
@@ -25,56 +35,6 @@ public class UserBookRequestDTO {
     @Max(value = 5, message = "Rating must be at most 5")
     private Integer rating;
 
+    @Builder.Default
     private boolean isFavorite = false;
-
-    // Getters and Setters
-
-
-    public Long getBookId() {
-        return bookId;
-    }
-
-    public void setBookId(Long bookId) {
-        this.bookId = bookId;
-    }
-
-    public ReadStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ReadStatus status) {
-        this.status = status;
-    }
-
-    public Integer getCurrentPage() {
-        return currentPage;
-    }
-
-    public void setCurrentPage(Integer currentPage) {
-        this.currentPage = currentPage;
-    }
-
-    public Integer getCurrentChapter() {
-        return currentChapter;
-    }
-
-    public void setCurrentChapter(Integer currentChapter) {
-        this.currentChapter = currentChapter;
-    }
-
-    public Integer getRating() {
-        return rating;
-    }
-
-    public void setRating(Integer rating) {
-        this.rating = rating;
-    }
-
-    public boolean isFavorite() {
-        return isFavorite;
-    }
-
-    public void setFavorite(boolean favorite) {
-        isFavorite = favorite;
-    }
 }

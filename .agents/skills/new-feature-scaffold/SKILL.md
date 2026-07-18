@@ -24,17 +24,19 @@ already unambiguous from the request.
    - `@NotBlank`/appropriate validation on required fields
    - Enum types for constrained string fields (e.g. `BookFormat`, `ReadStatus`) — never a raw `String` with a comment listing allowed values
    - Real relationship annotations (`@ManyToOne`, `@JoinColumn`, etc.) where applicable — never a bare `Long` foreign key field
-   - Standard getters/setters, `isX()` for booleans
+   - Lombok: `@Getter`, `@Setter`, `@NoArgsConstructor` (required by JPA), optionally `@AllArgsConstructor` / `@Builder`. Do **not** use `@Data` on entities. No manual getters/setters.
 
 2. **DTO** (`dto/{Name}RequestDTO.java`, `dto/{Name}ResponseDTO.java`)
    - Request DTO: only the fields a client sends, with `@Valid` annotations
    - Response DTO: mirrors only the fields a client should see
    - Never include internal-only fields (e.g. password hashes) in the response DTO
    - If a PATCH endpoint exists, create a separate `{Name}UpdateDTO` with all-nullable fields
+   - Lombok: use `@Data`, `@NoArgsConstructor`, `@AllArgsConstructor`. `@Builder` encouraged for DTOs with many fields.
 
 3. **Repository** (`repository/{Name}Repository.java`)
    - Interface only, `extends JpaRepository<{Name}, Long>`
-   - Add derived query methods (`findByX`, `existsByX`) only if the feature actually needs them — don't add unused methods speculatively
+   - Use built-in `JpaRepository` methods (`findById`, `findAll`, etc.) as-is
+   - For any custom queries, use explicit `@Query` with JPQL — do not use Spring Data derived method names (e.g. `findByX`)
 
 4. **Service** (`service/{Name}Service.java`)
    - All business logic lives here — controllers never contain logic beyond delegation

@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+// Service for issuing, parsing, and validating JWT tokens
 @Service
 public class JwtService {
 

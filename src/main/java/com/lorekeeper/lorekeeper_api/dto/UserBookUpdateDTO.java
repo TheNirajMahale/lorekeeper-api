@@ -1,9 +1,19 @@
 package com.lorekeeper.lorekeeper_api.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import com.lorekeeper.lorekeeper_api.entity.ReadStatus;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 
+// DTO for UserBookUpdateDTO
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserBookUpdateDTO {
 
     private ReadStatus status;
@@ -21,41 +31,5 @@ public class UserBookUpdateDTO {
 
     public ReadStatus getStatus() {
         return status;
-    }
-
-    public void setStatus(ReadStatus status) {
-        this.status = status;
-    }
-
-    public Integer getCurrentPage() {
-        return currentPage;
-    }
-
-    public void setCurrentPage(Integer currentPage) {
-        this.currentPage = currentPage;
-    }
-
-    public Integer getCurrentChapter() {
-        return currentChapter;
-    }
-
-    public void setCurrentChapter(Integer currentChapter) {
-        this.currentChapter = currentChapter;
-    }
-
-    public Integer getRating() {
-        return rating;
-    }
-
-    public void setRating(Integer rating) {
-        this.rating = rating;
-    }
-
-    public Boolean getIsFavorite() {
-        return isFavorite;
-    }
-
-    public void setIsFavorite(Boolean favorite) {
-        isFavorite = favorite;
     }
 }

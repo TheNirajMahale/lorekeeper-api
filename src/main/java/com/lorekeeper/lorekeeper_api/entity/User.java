@@ -6,10 +6,22 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+// Represents a registered user in the system (either local email/password or Google OAuth)
 @Entity
-@Table(name = "users") // 'user' is often a reserved keyword in SQL, so 'users' is safer
+@Table(name = "users") // 'users' is safer as 'user' is often reserved in SQL
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User {
 
     @Id
@@ -35,58 +47,4 @@ public class User {
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
-
-    // Constructors
-    public User() {}
-
-    public User(String email, String passwordHash, AuthProvider authProvider) {
-        this.email = email;
-        this.passwordHash = passwordHash;
-        this.authProvider = authProvider;
-    }
-
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
-    }
-
-    public AuthProvider getAuthProvider() {
-        return authProvider;
-    }
-
-    public void setAuthProvider(AuthProvider authProvider) {
-        this.authProvider = authProvider;
-    }
-
-    public String getProviderId() {
-        return providerId;
-    }
-
-    public void setProviderId(String providerId) {
-        this.providerId = providerId;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
 }

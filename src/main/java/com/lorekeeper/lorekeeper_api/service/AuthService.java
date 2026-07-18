@@ -21,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
 
+// Service for handling user registration, login, and JWT token issuance
 @Service
 public class AuthService {
 

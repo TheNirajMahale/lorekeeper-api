@@ -15,9 +15,12 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final com.lorekeeper.lorekeeper_api.security.JwtAuthenticationFilter jwtAuthFilter;
+    private final com.lorekeeper.lorekeeper_api.security.MdcFilter mdcFilter;
 
-    public SecurityConfig(com.lorekeeper.lorekeeper_api.security.JwtAuthenticationFilter jwtAuthFilter) {
+    public SecurityConfig(com.lorekeeper.lorekeeper_api.security.JwtAuthenticationFilter jwtAuthFilter,
+                          com.lorekeeper.lorekeeper_api.security.MdcFilter mdcFilter) {
         this.jwtAuthFilter = jwtAuthFilter;
+        this.mdcFilter = mdcFilter;
     }
 
     @Bean
@@ -42,7 +45,8 @@ public class SecurityConfig {
                 // Private: everything else requires a valid JWT token
                 .anyRequest().authenticated()
             )
-            .addFilterBefore(jwtAuthFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(jwtAuthFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
+            .addFilterAfter(mdcFilter, com.lorekeeper.lorekeeper_api.security.JwtAuthenticationFilter.class);
 
         return http.build();
     }

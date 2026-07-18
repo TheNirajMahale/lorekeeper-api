@@ -53,9 +53,11 @@ Every resource in this project follows the same full pattern:
 per `.agents/skills/new-feature-scaffold/SKILL.md`. There is no legacy exception. 
 Do not invent a different structure.
 
-- **Entities:** private fields, `@NotBlank`/other validation on required fields, standard getters/setters.
-- **DTOs:** Never return an `@Entity` directly from a controller, and never accept one as a `@RequestBody` — always use matching DTOs.
+- **Entities:** private fields, `@NotBlank`/other validation on required fields. Use Lombok (`@Getter`, `@Setter`, `@NoArgsConstructor`; avoid `@Data` on entities). No manual getters/setters.
+- **DTOs:** Never return an `@Entity` directly from a controller, and never accept one as a `@RequestBody` — always use matching DTOs. Use Lombok `@Data` on DTOs.
+- **Repositories:** Use built-in `JpaRepository` methods as-is. For all custom queries, use explicit `@Query` with JPQL — do not use Spring Data derived method names.
 - **Controllers & Services:** Constructor injection only. Never field injection (`@Autowired` on a field). Controllers only delegate to Services; business logic lives in the Service.
+- **Logging:** Use SLF4J MDC for user context — do not pass `Principal` into each method for logging purposes.
 - **Error Handling:** Route "not found" / "invalid input" cases through the existing `GlobalExceptionHandler` pattern (`ResponseStatusException`), not a new ad-hoc style.
 
 ## No scope creep

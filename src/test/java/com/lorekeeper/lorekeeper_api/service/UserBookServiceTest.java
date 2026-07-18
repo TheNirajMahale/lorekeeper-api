@@ -67,7 +67,11 @@ public class UserBookServiceTest {
         when(bookRepository.findById(100L)).thenReturn(Optional.of(mockBook));
         when(userBookRepository.findByUserIdAndBookId(1L, 100L)).thenReturn(Optional.empty());
 
-        UserBook savedMock = new UserBook(mockUser, mockBook, ReadStatus.READING);
+        UserBook savedMock = UserBook.builder()
+                .user(mockUser)
+                .book(mockBook)
+                .status(ReadStatus.READING)
+                .build();
         savedMock.setId(5L);
         when(userBookRepository.save(any(UserBook.class))).thenReturn(savedMock);
 

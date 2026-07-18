@@ -16,6 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Collections;
 
+// Filter to intercept requests, extract JWT, and set Spring Security context
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 

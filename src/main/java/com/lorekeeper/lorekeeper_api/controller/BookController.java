@@ -7,17 +7,22 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
+import com.lorekeeper.lorekeeper_api.security.SecurityUtils;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 
+// Controller for managing Book entities (the shared catalog)
 @RestController
 @RequestMapping("/books")
 public class BookController {
 
     private final BookService bookService;
+    private final SecurityUtils securityUtils;
 
-    public BookController(BookService bookService) {
+    public BookController(BookService bookService, SecurityUtils securityUtils) {
         this.bookService = bookService;
+        this.securityUtils = securityUtils;
     }
 
     @GetMapping
@@ -32,8 +37,11 @@ public class BookController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BookResponseDTO createBook(Principal principal, @Valid @RequestBody BookRequestDTO requestDTO) {
-        Long userId = Long.valueOf(principal.getName());
+    public BookResponseDTO createBook(@Valid @RequestBody BookRequestDTO requestDTO) {
+        Long userId = securityUtils.getCurrentUserId();
+        if (userId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
+        }
         return bookService.createBook(userId, requestDTO);
     }
 

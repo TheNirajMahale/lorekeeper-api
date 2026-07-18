@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+// Controller handling user authentication and registration
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
