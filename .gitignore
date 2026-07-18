@@ -41,3 +41,6 @@ tmp/
 
 # Personal Notes
 notes/
+
+# Secrets / Config
+src/main/resources/application.properties

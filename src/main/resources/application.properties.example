@@ -3,7 +3,7 @@ spring.application.name=lorekeeper-api
 # PostgreSQL configuration
 spring.datasource.url=jdbc:postgresql://localhost:5433/mydb
 spring.datasource.username=niraj
-spring.datasource.password=root
+spring.datasource.password=${DB_PASSWORD}
 
 # Hibernate / JPA
 spring.jpa.hibernate.ddl-auto=update
@@ -11,7 +11,10 @@ spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
 
 # OpenLibrary API
-lorekeeper.openlibrary.contact-email=nirajmahale2002@gmail.com
+lorekeeper.openlibrary.contact-email=${CONTACT_EMAIL}
 
 # Google OAuth Configuration
-google.client.id=YOUR_GOOGLE_CLIENT_ID_HERE
+google.client.id=${GOOGLE_CLIENT_ID}
+
+# JWT Secret
+jwt.secret=${JWT_SECRET}

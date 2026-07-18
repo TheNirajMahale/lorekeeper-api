@@ -17,11 +17,9 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    // Ideally, this should be injected via @Value("${jwt.secret}") from application.properties.
-    // For development, we'll generate a secure random key if one isn't provided, 
-    // or use a static one so restarts don't invalidate tokens immediately.
+    // The secret should be configured externally via environment variables or properties.
     // In production, ALWAYS use an external secret.
-    @Value("${jwt.secret:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}")
+    @Value("${jwt.secret}")
     private String secretKey;
 
     @Value("${jwt.expiration:86400000}") // 24 hours in milliseconds
