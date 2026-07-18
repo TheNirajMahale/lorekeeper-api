@@ -38,3 +38,6 @@ tmp/
 
 # Logs
 *.log
+
+# Personal Notes
+notes/
