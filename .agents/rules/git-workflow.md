@@ -14,9 +14,9 @@ Not allowed: `wip`, `fix bug`, `updates`, `stuff`, or any message that doesn't
 describe the actual change.
 
 ## Branching
-- Never commit directly to `main`
-- One feature/fix per branch, named `feature/short-description` or `fix/short-description`
-- Keep branches short-lived — merge or discard, don't let them go stale
+- **Features & Complex Fixes (`feat`, `fix`, `refactor`):** MUST be done on a separate short-lived branch (e.g., `feature/short-description` or `fix/short-description`). Do not commit code logic directly to `main`.
+- **Documentation & Minor Chores (`docs`, `chore`):** CAN be committed directly to `main` IF AND ONLY IF they do not alter application logic or risk breaking the build (e.g., updating markdown files, fixing typos).
+- Keep branches short-lived — merge or discard, don't let them go stale.
 
 ## Before considering a change "done"
 - Code compiles and runs
