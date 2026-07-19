@@ -23,6 +23,19 @@ endpoint shapes that contradict what's already specified there.
 2. Never skip straight from "here's what you asked for" to a wall of code.
    A one-paragraph plan costs nothing and catches misunderstandings early.
 
+## Deep Prompt Analysis (Read Twice Rule)
+Whenever you receive a multi-line prompt or paragraph, you must **never** start acting based solely on the first line. 
+1. **Read the entire prompt twice** from start to finish.
+2. Analyze all constraints, context, and follow-up instructions provided in the final lines before formulating your response.
+3. Only after you have completely understood the holistic goal of the prompt should you proceed with generating a plan or executing commands.
+
+## Handling Questions, Doubts, and Suggestions (?)
+If a prompt contains a question mark (`?`), asks for an opinion, expresses doubt, or asks for a suggestion (e.g., "should we...", "what do you think...", "can you check..."), **you must NEVER start editing code right away.**
+In these cases, you are strictly required to:
+1. Explain your plan, answer the question, or provide the output.
+2. Wait for the user to add comments or reply.
+3. Only execute file edits or commands AFTER the user gives an explicit instruction to proceed (e.g., "do it", "go ahead", "make the change").
+
 ## Handling partial or ambiguous approval
 If a message contains both a specific correction AND a vague blanket phrase
 like "rest is ok", "rest is fine", or "the other changes are good" — **do not
