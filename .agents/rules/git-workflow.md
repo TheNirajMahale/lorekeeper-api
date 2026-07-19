@@ -29,9 +29,10 @@ describe the actual change.
 - **ONLY AFTER** both the AI and the user have successfully tested the endpoints is the agent allowed to `git commit` the code.
 - Commit message accurately describes what changed and why
 
-## Keeping documentation in sync
+## Keeping documentation and tests in sync
 - When endpoints are added, removed, or renamed, update Section 5 of
   `LoreKeeper.md` in the same commit — stale API docs are worse than no docs.
+- Whenever endpoints or logic change, you MUST also sync and update `scripts/run_integration_tests.py` to ensure the automated test suite strictly reflects the new API contract.
 
 ## Branch lifecycle
 - Delete feature branches (local and remote) after merging into `main`.
