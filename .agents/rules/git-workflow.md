@@ -22,9 +22,10 @@ describe the actual change.
 - Code compiles and runs
 - At least a basic test exists for new logic
 - No leftover debug prints, commented-out old code, or unexplained TODOs
-- The agent MUST provide all new endpoints (names, HTTP methods, payloads) to the user.
-- The agent MUST test all new endpoints locally using `curl` commands and verify they work.
-- The user MUST manually test and verify the endpoints in their API client (like Bruno).
+- The agent MUST test all new endpoints locally using `curl` commands and verify they work FIRST.
+- After the agent's `curl` tests pass, the agent MUST guide the user to manually test all new endpoints in their API client (like Bruno).
+- The agent MUST provide step-by-step instructions for the user on what to configure (URL, Method, Auth, Payload) and what exactly to check for in the expected response.
+- The agent MUST provide these manual testing instructions strictly **ONE test at a time**, waiting for the user to confirm success before moving to the next test.
 - **ONLY AFTER** both the AI and the user have successfully tested the endpoints is the agent allowed to `git commit` the code.
 - Commit message accurately describes what changed and why
 
