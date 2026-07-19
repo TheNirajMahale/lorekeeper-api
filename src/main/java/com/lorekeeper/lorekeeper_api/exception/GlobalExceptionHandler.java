@@ -27,7 +27,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, String>> handleHttpMessageNotReadable(org.springframework.http.converter.HttpMessageNotReadableException ex) {
-        return ResponseEntity.status(400).body(Map.of("error", "Malformed JSON request or invalid enum value"));
+        ex.printStackTrace();
+        return ResponseEntity.status(400).body(Map.of("error", "Malformed JSON request or invalid enum value: " + ex.getMessage()));
     }
 
     @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
